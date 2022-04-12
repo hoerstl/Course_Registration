@@ -14,21 +14,6 @@ def type_nums(file, boo=False):
             keyboard.press("tab")
 
 
-def wellbackup():
-    keyboard.write("20468")
-
-
-def gstrbackup1():
-    keyboard.write("20202")
-
-
-def gstrbackup2():
-    keyboard.write("20209")
-
-keyboard.add_hotkey("shift+w", wellbackup)
-keyboard.add_hotkey("shift+g", gstrbackup1)
-keyboard.add_hotkey("shift+h", gstrbackup2)
-
 
 ask = input("Would you like to \"change\" your CRNs? or register \"reg\" using them?\n")
 if ask.lower() == "change":
@@ -48,19 +33,6 @@ elif ask.lower() == "reg":
     keyboard.wait("backspace", True)
     type_nums(file)
     keyboard.press_and_release("enter")
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
