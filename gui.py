@@ -18,7 +18,7 @@ class Mainwindow:
         # The buttons
         self.button1 = tk.Button(self.tab1, text="Edit")
         self.button2 = tk.Button(self.tab1, text="Clear")
-        self.button3 = tk.Button(self.tab1, text="Name")
+        self.button3 = tk.Button(self.tab1, text="CRN")
         self.readyViewButtons()
         # The Scrollbar/Notebook combo
         self.scrollbar = tk.Scrollbar(self.tab1)
@@ -127,17 +127,20 @@ class Mainwindow:
         self.buttonhelp.grid(row=0, column=0, padx=10)
         tk.Label(self.editFrame, text="Name", fg="blue").grid(row=0, column=1)
         tk.Label(self.editFrame, text="CRN", fg="green").grid(row=0, column=2)
-        self.refreshEditingFrame(True)
+        # This may be able to be removed depending on whether we call the refresh every time we enter editing mode.
+        # (Edit and clear button)
+        self.refreshEditingFrame(False)
 
 
-    def refreshEditingFrame(self, firsttime=False):
+
+    def refreshEditingFrame(self, updatefromentries=True):
         """
         This function updates self.editing course list, delets all entry widgets, makes them all brand new, and then
         updates their labels.
         :return:
         """
         # Update the course list based on changes to the entry widgets
-        if not firsttime:
+        if updatefromentries:
             self.updateEditingCourseList()
         # Delete all current entry widgets
         self.purgeEditRows()
@@ -334,14 +337,11 @@ class Mainwindow:
 
 
     def cancelEditButton(self):
-        for row in range(len(self.courselist)):
-            # Delete Current data
-            self.editrows[row][1].delete(0, tk.END)
-            self.editrows[row][2].delete(0, tk.END)
-            # Add the known classnames and CRNs into the entry widgets
-            self.editrows[row][1].insert(0, self.courselist[row][0])
-            self.editrows[row][2].insert(0, self.courselist[row][1])
-
+        """
+        Describes the behavior of the cancel button.
+        :return: None
+        """
+        self.purgeEditRows()
         self.viewMode()
 
 
@@ -362,13 +362,14 @@ class Mainwindow:
 
     def listCourses(self):
         """
-        Clears and Inserts the courses into self.scrollbox so it can update based on the state of button3.
+        Clears and Inserts the courses into self.scrollbox so it can update based on the state of button3 and the most
+        recent self.courselist.
         :return: None
         """
         # Enable the scrollbox for the duration of this function
         self.scrollbox.config(state=tk.NORMAL)
 
-        if self.button3['text'] == "Name":
+        if self.button3['text'] == "CRN":
             view = 0
         else:
             view = 1
@@ -422,7 +423,7 @@ class Mainwindow:
         self.button2.grid(row=1, column=2, sticky="", pady=30)
         self.button3.grid(row=1, column=3, sticky="", pady=30)
         self.scrollbar.grid(row=0, column=5, sticky="nsw", padx=(0, self.tab1pad))
-
+        self.listCourses()  # List the courses before gridding the scrollbox to the screen
         self.scrollbox.grid(row=0, column=0, columnspan=4, sticky="e", padx=(self.tab1pad, 0))
 
 
@@ -432,7 +433,7 @@ class Mainwindow:
         :return: None
         """
         self.editingcourselist = self.courselist.copy()
-        self.refreshEditingFrame(True)
+        self.refreshEditingFrame(False)
         self.editMode()
 
 
@@ -441,18 +442,24 @@ class Mainwindow:
         This function describes the behavior of the clear button.
         :return: None
         """
-
+        self.purgeEditRows()
         self.editingcourselist = [["", "", 0]]
-        self.refreshEditingFrame()
+        self.refreshEditingFrame(False)
         self.editMode()
 
 
+    def savetofile(self):
+        """
+        This method will save self.courselist to the self.savefile txt file.
+        :return:
+        """
+        pass
 
 
 def main():
     courselist = [
         ["Linear", 16514, 0],
-        ["Calc", 16597, 1],
+        ["Calc", 16597, 0],
         ["Fundamentals", 14779, 0],
         ["Differential Equations", 11798, 1],
         ["Computer Security", 47774, 0],
