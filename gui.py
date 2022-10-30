@@ -101,9 +101,9 @@ class Mainwindow:
         A simple function that configures button1, button2, and button3 in self.
         :return: None
         """
-        self.button1.config(font=("Times New Roman", "10"), command=self.editMode)
+        self.button1.config(font=("Times New Roman", "10"), command=self.editButton)
 
-        self.button2.config(font=("Times New Roman", "10"), command=self.clear)
+        self.button2.config(font=("Times New Roman", "10"), command=self.clearButton)
 
         self.button3.config(font=("Times New Roman", "10"),
                             command=self.button3State)
@@ -127,18 +127,18 @@ class Mainwindow:
         self.buttonhelp.grid(row=0, column=0, padx=10)
         tk.Label(self.editFrame, text="Name", fg="blue").grid(row=0, column=1)
         tk.Label(self.editFrame, text="CRN", fg="green").grid(row=0, column=2)
+        self.refreshEditingFrame(True)
 
-        self.refreshEditingFrame()
 
-
-    def refreshEditingFrame(self):
+    def refreshEditingFrame(self, firsttime=False):
         """
         This function updates self.editing course list, delets all entry widgets, makes them all brand new, and then
         updates their labels.
         :return:
         """
         # Update the course list based on changes to the entry widgets
-        self.updateEditingCourseList()
+        if not firsttime:
+            self.updateEditingCourseList()
         # Delete all current entry widgets
         self.purgeEditRows()
         # Make brand new entry widgets
@@ -170,10 +170,12 @@ class Mainwindow:
         elements.
         :return: None
         """
-
+        self.editingcourselist = []
         for rownum in range(len(self.editrows)):
+            self.editingcourselist.append(["", "", ""])
             self.editingcourselist[rownum][0] = self.editrows[rownum][1].get()
             self.editingcourselist[rownum][1] = self.editrows[rownum][2].get()
+            self.editingcourselist[rownum][2] = self.editrows[rownum][3]
 
 
     def makeEditingRow(self, rownum, offset=0):
@@ -209,9 +211,9 @@ class Mainwindow:
         print(f"I'm indenting row {rownum}. It has an indentation of {self.editrows[rownum-1][3]}")
 
         if keyboard.is_pressed("Shift"):
-            self.editingcourselist[rownum-1][2] = 0
+            self.editrows[rownum-1][3] = 0
         else:
-            self.editingcourselist[rownum - 1][2] = 1
+            self.editrows[rownum-1][3] = 1
 
         self.refreshEditingFrame()
 
@@ -260,15 +262,6 @@ class Mainwindow:
         """
 
         self.makeEditingRow(rownum, self.editingcourselist[rownum-2][2])
-        self.editingcourselist.insert(
-            rownum-1,
-            [
-                "",
-                "",
-                self.editingcourselist[rownum - 2][2]
-            ]
-        )
-
 
         self.refreshEditingFrame()
 
@@ -308,6 +301,9 @@ class Mainwindow:
 
         if valid:
             print("This should save everything now!")
+            self.updateEditingCourseList()
+            self.courselist = self.editingcourselist.copy()
+            self.viewMode()
         else:
             print("One or more of the boxes had errors in it.")
 
@@ -404,6 +400,7 @@ class Mainwindow:
         self.button2.grid_remove()
         self.button3.grid_remove()
 
+
         # Grids the editing frame
         self.editFrame.grid(row=0, column=0, columnspan=4, sticky="e", padx=self.tab1pad)
         self.buttonsave.grid(row=1, column=1, sticky="", pady=30)
@@ -425,11 +422,31 @@ class Mainwindow:
         self.button2.grid(row=1, column=2, sticky="", pady=30)
         self.button3.grid(row=1, column=3, sticky="", pady=30)
         self.scrollbar.grid(row=0, column=5, sticky="nsw", padx=(0, self.tab1pad))
+
         self.scrollbox.grid(row=0, column=0, columnspan=4, sticky="e", padx=(self.tab1pad, 0))
 
 
-    def clear(self):
-        print("I am the clear button")
+    def editButton(self):
+        """
+        This function describes the behavior of the edit button.
+        :return: None
+        """
+        self.editingcourselist = self.courselist.copy()
+        self.refreshEditingFrame(True)
+        self.editMode()
+
+
+    def clearButton(self):
+        """
+        This function describes the behavior of the clear button.
+        :return: None
+        """
+
+        self.editingcourselist = [["", "", 0]]
+        self.refreshEditingFrame()
+        self.editMode()
+
+
 
 
 def main():
