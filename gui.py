@@ -5,8 +5,11 @@ from tkinter import messagebox
 
 
 class Mainwindow:
-    def __init__(self, courselist):
-        self.courselist = courselist
+    def __init__(self, readfile, savefile):
+        self.courselist = []
+        self.readfile = readfile
+        self.readfromfile()  # Gets the courselist ready based on input from file
+        self.savefile = savefile
         self.root = tk.Tk()
         self.readyRoot()  # Configures the root window
         self.tabControl = ttk.Notebook(self.root)
@@ -29,7 +32,7 @@ class Mainwindow:
         # The Edit Frame (for when you press the edit button)
         self.editFrame = tk.Frame(self.tab1)
         self.buttonhelp = tk.Button(self.editFrame, text="?")  # This button is different because it lives in editFrame.
-        self.editingcourselist = courselist.copy()  # This list serves as the course list for editing purposes.
+        self.editingcourselist = self.courselist.copy()  # This list serves as the course list for editing purposes.
         self.editrows = []  # This list will hold the three widgets and an indentation value for each row in the editFrame
         self.readyEditFrame()  # This creates the widgets that go inside of self.editFrame and grids them there
         self.buttonsave = tk.Button(self.tab1, text="Save")
@@ -106,7 +109,7 @@ class Mainwindow:
         self.button2.config(font=("Times New Roman", "10"), command=self.clearButton)
 
         self.button3.config(font=("Times New Roman", "10"),
-                            command=self.button3State)
+                            command=self.buttonName)
 
 
     def readyEditButtons(self):
@@ -114,7 +117,7 @@ class Mainwindow:
         Simple function that configures the edit buttons.
         :return: None
         """
-        self.buttonsave.config(command=self.saveEditButton)
+        self.buttonsave.config(command=self.saveButton)
         self.buttoncancel.config(command=self.cancelEditButton)
         self.buttonhelp.config(command=self.helpEditButton)
 
@@ -220,23 +223,6 @@ class Mainwindow:
 
         self.refreshEditingFrame()
 
-        """
-        self.editrows[rownum-1][0].grid_remove()
-        self.editrows[rownum-1][1].grid_remove()
-        self.editrows[rownum-1][2].grid_remove()
-
-        if keyboard.is_pressed("Shift"):  # For some reason, this line of code doesn't give true unless called twice.
-            self.editrows[rownum-1][3] = 0
-        else:
-            self.editrows[rownum-1][3] = 1
-
-        self.editrows[rownum-1][0].grid(row=rownum, column=0 + self.editrows[rownum-1][3])
-        self.editrows[rownum-1][1].grid(row=rownum, column=1 + self.editrows[rownum-1][3])
-        self.editrows[rownum-1][2].grid(row=rownum, column=2 + self.editrows[rownum-1][3])
-
-        self.updateEditRowLabels()
-        """
-
 
     def updateEditRowLabels(self):
         alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -269,7 +255,7 @@ class Mainwindow:
         self.refreshEditingFrame()
 
 
-    def button3State(self):
+    def buttonName(self):
         """
         Changes the name of self.button3 to CRN if it was Name, and Name if it was CRN. It then updates the scrollbox.
         :return: None
@@ -283,7 +269,7 @@ class Mainwindow:
 
 
     # Still need to implement this
-    def saveEditButton(self):
+    def saveButton(self):
         """
         Checks to see if proper edits were made. If they were it saves the edits made to self.courselist and then
         updates them everywhere. Then switches to view mode.
@@ -306,9 +292,15 @@ class Mainwindow:
             print("This should save everything now!")
             self.updateEditingCourseList()
             self.courselist = self.editingcourselist.copy()
+            # Save self.courselist to the self.savefile file
+            self.savetofile()
+            # Enter viewing mode
             self.viewMode()
+
         else:
             print("One or more of the boxes had errors in it.")
+
+
 
 
     def validateName(self, name):
@@ -382,7 +374,10 @@ class Mainwindow:
                 offset = ""
             else:
                 offset = "--> "
-            self.scrollbox.insert(tk.END, offset + str(course[view]))
+            if course[view] == "":
+                self.scrollbox.insert(tk.END, offset + "[No Course Name]")
+            else:
+                self.scrollbox.insert(tk.END, offset + str(course[view]))
 
         # Disable the scrollbox when you're done
         self.scrollbox.config(state=tk.DISABLED)
@@ -448,12 +443,41 @@ class Mainwindow:
         self.editMode()
 
 
+    def readfromfile(self):
+        """
+        This will set self.courselist based off the lines in the self.readfile
+        :return: None
+        """
+        inputfile = open(self.readfile)
+        courseparts = inputfile.read().split("\n")
+        inputfile.close()
+        # Clear and instantiate self.courselist
+        self.courselist = []
+        if len(courseparts)//3 != len(courseparts)/3:
+            print(f"There is some odd problem with the input file. {len(courseparts)} lines is not evenly divisable by 3.")
+        for coursenum in range(len(courseparts)//3):
+            self.courselist.append(
+                [
+                    courseparts[coursenum*3],
+                    courseparts[coursenum * 3 + 1],
+                    int(courseparts[coursenum * 3 + 2])
+                ]
+            )
+
+
     def savetofile(self):
         """
         This method will save self.courselist to the self.savefile txt file.
         :return:
         """
-        pass
+        outputfile = open(self.savefile, "w")
+        for coursenum in range(len(self.courselist)):
+            outputfile.write(str(self.courselist[coursenum][0]) + "\n")
+            outputfile.write(str(self.courselist[coursenum][1]) + "\n")
+            outputfile.write(str(self.courselist[coursenum][2]))
+            if coursenum != len(self.courselist) - 1:
+                outputfile.write("\n")
+        outputfile.close()
 
 
 def main():
@@ -465,7 +489,7 @@ def main():
         ["Computer Security", 47774, 0],
         ["Networking", 77165, 0]
     ]
-    root = Mainwindow(courselist)
+    root = Mainwindow("save.txt", "save.txt")
     root.root.mainloop()
 
 

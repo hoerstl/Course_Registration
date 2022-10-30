@@ -1,0 +1,18 @@
+Linear
+16514
+0
+Calc
+16597
+1
+Fundamentals
+14779
+0
+Differential class
+11798
+0
+Computer Security
+47774
+0
+Networking
+77165
+0
