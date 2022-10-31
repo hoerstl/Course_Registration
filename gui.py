@@ -232,6 +232,8 @@ class Mainwindow:
         courserow[2].bind("<Tab>", lambda function: self.indentEditRow(rownum))
         courserow[1].bind("<Return>", lambda function: self.insertEditRow(rownum+1))
         courserow[2].bind("<Return>", lambda function: self.insertEditRow(rownum+1))
+        courserow[1].bind("<Delete>", lambda function: self.deleteEditRow(rownum))
+        courserow[2].bind("<Delete>", lambda function: self.deleteEditRow(rownum))
         # Grid each of the widgets to the self.editFrame
         courserow[0].grid(row=rownum, column=0 + offset)
         courserow[1].grid(row=rownum, column=1 + offset)
@@ -278,6 +280,19 @@ class Mainwindow:
 
         self.makeEditingRow(rownum, self.editingcourselist[rownum-2][2])
 
+        self.refreshEditingFrame()
+
+
+    def deleteEditRow(self, rownum):
+        """
+        Describes what happens when you press the delete button in the Edit view.
+        :param rownum: This is the row number that you'd like to delete.
+        :return: None
+        """
+        self.editrows[rownum-1][0].destroy()
+        self.editrows[rownum-1][1].destroy()
+        self.editrows[rownum-1][2].destroy()
+        self.editrows.pop(rownum-1)
         self.refreshEditingFrame()
 
 
@@ -366,6 +381,8 @@ class Mainwindow:
         messagebox.showinfo("Help",
                             "Enter:\n" +
                             "Press the enter button to add a new class to the list.\n\n" +
+                            "Delete:\n" +
+                            "Press the delete key (\"del\") to remove a class from the list.\n\n"
                             "Tab:\n" +
                             "Press tab to indent a class and mark it as a backup for the class before it.\n\n" +
                             "Shift+Tab\n" +
