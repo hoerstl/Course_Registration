@@ -242,8 +242,6 @@ class Mainwindow:
 
     def indentEditRow(self, rownum):
 
-        print(f"I'm indenting row {rownum}. It has an indentation of {self.editrows[rownum-1][3]}")
-
         if keyboard.is_pressed("Shift"):
             self.editrows[rownum-1][3] = 0
         else:
@@ -317,7 +315,6 @@ class Mainwindow:
                 row[2].config(bg="white")
 
         if valid:
-            print("This should save everything now!")
             self.updateEditingCourseList()
             self.courselist = self.editingcourselist.copy()
             # Save self.courselist to the self.savefile file
@@ -325,8 +322,6 @@ class Mainwindow:
             # Enter viewing mode
             self.viewMode()
 
-        else:
-            print("One or more of the boxes had errors in it.")
 
 
     def validateName(self, name):
@@ -368,7 +363,6 @@ class Mainwindow:
         This function describes the behavior of the help button on the editing screen.
         :return: None
         """
-        print("I'm the help button")
         messagebox.showinfo("Help",
                             "Enter:\n" +
                             "Press the enter button to add a new class to the list.\n\n" +
@@ -414,7 +408,6 @@ class Mainwindow:
         This function sets up the UI to accept user input for classes
         :return: None
         """
-        print("I am the edit button!")
         # Hides the parts of tab1 that are for viewing
         self.scrollbox.grid_remove()
         self.scrollbar.grid_remove()
@@ -511,7 +504,6 @@ class Mainwindow:
         Describes the behavior of the hotkey.
         :return: None
         """
-        print("I'm the thing and I'm working!")
         mainchoices = []
         # Add all of the first picks to the mainchoices list.
         for course in self.courselist:
