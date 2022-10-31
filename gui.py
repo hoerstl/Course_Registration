@@ -14,6 +14,7 @@ class Mainwindow:
         self.readyRoot()  # Configures the root window
         self.tabControl = ttk.Notebook(self.root)
         # Used for the Edit/Delete Tab
+        self.hotkeyenabled = False
         self.tab1 = ttk.Frame(self.tabControl)
         # Used for the Go Time tab!
         self.tab2 = ttk.Frame(self.tabControl)
@@ -61,8 +62,36 @@ class Mainwindow:
         :return: None
         """
         self.tabControl.add(self.tab1, text="View/Edit")
+        self.tab1.bind("<FocusIn>", lambda function: self.focusTab1())
         self.tabControl.add(self.tab2, text="Go Time!")
+        self.tab2.bind("<FocusIn>", lambda function: self.focusTab2())
+        tk.Label(self.tab2,
+                 text="Click into the first box and press the  `  button right below the escape key on your keyboard to type your classes.",
+                 wraplength=200,
+                 ).grid(row=0, column=0, padx=50, pady=60)
         self.tabControl.grid(row=0, column=1, columnspan=1, sticky="ew", padx=10)
+
+
+    def focusTab1(self):
+        """
+        Describes what should happen if Tab1 gets focus. If tab1 gets focus, it checks if the hotkey is enabled. If it
+        is, then it removes the hotkey and sets self.hotkeyenabled to False (disables the hotkey).
+        :return: None
+        """
+        if self.hotkeyenabled:
+            keyboard.remove_hotkey("`")
+            self.hotkeyenabled = False
+
+
+    def focusTab2(self):
+        """
+        Describes what should happen if Tab2 gets focus. If tab2 gets focus, it checks if the hotkey is enabled. If it's
+        not then it adds the hotkey and sets self.hotkeyenabled to True.
+        :return: None
+        """
+        if not self.hotkeyenabled:
+            keyboard.add_hotkey("`", self.enterCRNs, suppress=True, trigger_on_release=True)
+            self.hotkeyenabled = True
 
 
     def readyscrollBoxBar(self):
@@ -133,7 +162,6 @@ class Mainwindow:
         # This may be able to be removed depending on whether we call the refresh every time we enter editing mode.
         # (Edit and clear button)
         self.refreshEditingFrame(False)
-
 
 
     def refreshEditingFrame(self, updatefromentries=True):
@@ -299,8 +327,6 @@ class Mainwindow:
 
         else:
             print("One or more of the boxes had errors in it.")
-
-
 
 
     def validateName(self, name):
@@ -478,6 +504,26 @@ class Mainwindow:
             if coursenum != len(self.courselist) - 1:
                 outputfile.write("\n")
         outputfile.close()
+
+
+    def enterCRNs(self):
+        """
+        Describes the behavior of the hotkey.
+        :return: None
+        """
+        print("I'm the thing and I'm working!")
+        mainchoices = []
+        # Add all of the first picks to the mainchoices list.
+        for course in self.courselist:
+            if course[2] == 0:
+                mainchoices.append(course)
+
+        for course in mainchoices:
+            keyboard.write(course[1])
+            keyboard.press_and_release("tab")  # Not sure if this is how to reference the tab key
+        keyboard.press_and_release("enter")  # Not sure if this is how to reference the enter key
+
+
 
 
 def main():
