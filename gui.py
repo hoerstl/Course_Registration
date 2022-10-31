@@ -386,7 +386,7 @@ class Mainwindow:
                             "Tab:\n" +
                             "Press tab to indent a class and mark it as a backup for the class before it.\n\n" +
                             "Shift+Tab\n" +
-                            "Press shift+tab to remove the indent and makes it afirst choice.")
+                            "Press shift+tab to remove the indent and makes it a first choice.")
 
 
     def listCourses(self):
