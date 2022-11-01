@@ -1,2 +1,2 @@
 # Course_Registration
-A small little baby program that lets me get all of my classes first on time
+A program that Allows for the tracking and pairing course names with their CRN's. It also allows you to register using them.
