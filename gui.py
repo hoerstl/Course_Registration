@@ -42,6 +42,12 @@ class Mainwindow:
 
 
 
+        # Important values used for entering backup classes
+        self.mainchoices = []
+        self.backups = []
+
+
+
         # Start the program in view mode
         self.viewMode()
 
@@ -66,9 +72,13 @@ class Mainwindow:
         self.tabControl.add(self.tab2, text="Go Time!")
         self.tab2.bind("<FocusIn>", lambda function: self.focusTab2())
         tk.Label(self.tab2,
-                 text="Click into the first box and press the  `  button right below the escape key on your keyboard to type your classes.",
-                 wraplength=200,
-                 ).grid(row=0, column=0, padx=50, pady=60)
+                 text="""The hotkeys are CURRENTLY ACTIVE. Here's how to use them:
+Click into the first box and press the  `  button right below the escape key on your keyboard to type your classes.
+Additionally, to enter your alternate classes for any given class, press 'alt' followed by the number that corresponds to your class.
+e.x. press alt+1 at the same time to enter your alternate for class 1.
+NOTE: Doing this once will enter ONLY your FIRST alternate CRN. Doing it again enters your SECOND, then THIRD and so on. They will not loop back to the start.
+If you accidentally enter one of your alternate courses before registration, you will need to swap to the View/Edit tab and back again to reset the counter."""
+                 ).grid(row=0, column=0, sticky="", pady=50)
         self.tabControl.grid(row=0, column=1, columnspan=1, sticky="ew", padx=10)
 
 
@@ -80,7 +90,10 @@ class Mainwindow:
         """
         if self.hotkeyenabled:
             keyboard.remove_hotkey("`")
+            for numberkey in range(9):
+                keyboard.remove_hotkey(f"alt+{numberkey+1}")
             self.hotkeyenabled = False
+
 
 
     def focusTab2(self):
@@ -89,9 +102,30 @@ class Mainwindow:
         not then it adds the hotkey and sets self.hotkeyenabled to True.
         :return: None
         """
+
         if not self.hotkeyenabled:
             keyboard.add_hotkey("`", self.enterCRNs, suppress=True, trigger_on_release=True)
+            for numberkey in range(9):
+                keyboard.add_hotkey(f"alt+{numberkey+1}",
+                                    self.enterbackup,
+                                    args=[numberkey+1],
+                                    suppress=True,
+                                    trigger_on_release=True)
+
             self.hotkeyenabled = True
+
+            # Update the mainchoices and backups lists
+            self.mainchoices = []
+            self.backups = []
+            backupnum = 0
+            # Add all of the first picks to the mainchoices list.
+            for course in self.courselist:
+                if course[2] == 0:
+                    self.mainchoices.append(course)
+                    self.backups.append([1])
+                    backupnum += 1
+                else:
+                    self.backups[backupnum - 1].append(course)
 
 
     def readyscrollBoxBar(self):
@@ -309,7 +343,6 @@ class Mainwindow:
         self.listCourses()
 
 
-    # Still need to implement this
     def saveButton(self):
         """
         Checks to see if proper edits were made. If they were it saves the edits made to self.courselist and then
@@ -336,7 +369,6 @@ class Mainwindow:
             self.savetofile()
             # Enter viewing mode
             self.viewMode()
-
 
 
     def validateName(self, name):
@@ -405,16 +437,18 @@ class Mainwindow:
 
         # Clear out the scrollbox
         self.scrollbox.delete(0, tk.END)
-
+        number = 0
         for course in self.courselist:
             if course[2] == 0:
                 offset = ""
+                number += 1
             else:
                 offset = "--> "
+            coursename = f"{number}. " + str(course[view])
             if course[view] == "":
-                self.scrollbox.insert(tk.END, offset + "[No Course Name]")
+                self.scrollbox.insert(tk.END, offset + f"{number}. " + "[No Course Name]")
             else:
-                self.scrollbox.insert(tk.END, offset + str(course[view]))
+                self.scrollbox.insert(tk.END, offset + coursename)
 
         # Disable the scrollbox when you're done
         self.scrollbox.config(state=tk.DISABLED)
@@ -518,32 +552,34 @@ class Mainwindow:
 
     def enterCRNs(self):
         """
-        Describes the behavior of the hotkey.
+        Describes the behavior of the ` hotkey.
         :return: None
         """
-        mainchoices = []
-        # Add all of the first picks to the mainchoices list.
-        for course in self.courselist:
-            if course[2] == 0:
-                mainchoices.append(course)
 
-        for course in mainchoices:
+        for course in self.mainchoices:
             keyboard.write(course[1])
             keyboard.press_and_release("tab")  # Not sure if this is how to reference the tab key
         keyboard.press_and_release("enter")  # Not sure if this is how to reference the enter key
 
 
+    def enterbackup(self, number):
+        """
+        This will type the backup CRN for a particular class based on the number parameter.
+        :param number: This is the class you want to type your backup for.
+        :return: None
+        """
+        if number < len(self.backups):
+            if self.backups[number-1][0] < len(self.backups[number-1]):
+                keyboard.write((self.backups[number-1][self.backups[number-1][0]][1]))
+                keyboard.press_and_release("enter")
+                self.backups[number - 1][0] += 1
+            else:
+                print(f"There are no more backups for class {number}.")
+        else:
+            print(f"You do not have a main course selection for class {number}.")
 
 
 def main():
-    courselist = [
-        ["Linear", 16514, 0],
-        ["Calc", 16597, 0],
-        ["Fundamentals", 14779, 0],
-        ["Differential Equations", 11798, 1],
-        ["Computer Security", 47774, 0],
-        ["Networking", 77165, 0]
-    ]
     root = Mainwindow("save.txt", "save.txt")
     root.root.mainloop()
 
