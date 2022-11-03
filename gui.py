@@ -74,11 +74,12 @@ class Mainwindow:
         tk.Label(self.tab2,
                  text="""The hotkeys are CURRENTLY ACTIVE. Here's how to use them:
 Click into the first box and press the  `  button right below the escape key on your keyboard to type your classes.
-Additionally, to enter your alternate classes for any given class, press 'alt' followed by the number that corresponds to your class.
-e.x. press alt+1 at the same time to enter your alternate for class 1.
+Additionally, to enter your alternate classes for any given class, press 'alt' and 'shift' followed by the number that corresponds to your class.
+e.x. press alt+shift+1 at the same time to enter your alternate for class 1.
 NOTE: Doing this once will enter ONLY your FIRST alternate CRN. Doing it again enters your SECOND, then THIRD and so on. They will not loop back to the start.
-If you accidentally enter one of your alternate courses before registration, you will need to swap to the View/Edit tab and back again to reset the counter."""
-                 ).grid(row=0, column=0, sticky="", pady=50)
+If you accidentally enter one of your alternate courses before registration, you will need to swap to the View/Edit tab and back again to reset the counter.""",
+                 wraplength=300
+                 ).grid(row=0, column=0, sticky="", padx=50, pady=50)
         self.tabControl.grid(row=0, column=1, columnspan=1, sticky="ew", padx=10)
 
 
@@ -91,7 +92,7 @@ If you accidentally enter one of your alternate courses before registration, you
         if self.hotkeyenabled:
             keyboard.remove_hotkey("`")
             for numberkey in range(9):
-                keyboard.remove_hotkey(f"alt+{numberkey+1}")
+                keyboard.remove_hotkey(f"alt+shift+{numberkey+1}")
             self.hotkeyenabled = False
 
 
@@ -106,7 +107,7 @@ If you accidentally enter one of your alternate courses before registration, you
         if not self.hotkeyenabled:
             keyboard.add_hotkey("`", self.enterCRNs, suppress=True, trigger_on_release=True)
             for numberkey in range(9):
-                keyboard.add_hotkey(f"alt+{numberkey+1}",
+                keyboard.add_hotkey(f"alt+shift+{numberkey+1}",
                                     self.enterbackup,
                                     args=[numberkey+1],
                                     suppress=True,
@@ -142,7 +143,7 @@ If you accidentally enter one of your alternate courses before registration, you
             # If it's indented, judge its length based off of the indent as well
             if course[2] == 1:
                 if len(course[0]) + 2 > longest:
-                    longest = len(course[0]) + 2
+                    longest = len(course[0]) + 4
             # Otherwise, just judge its length as is
             else:
                 if len(course[0]) > longest:
