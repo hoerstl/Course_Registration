@@ -559,8 +559,8 @@ If you accidentally enter one of your alternate courses before registration, you
 
         for course in self.mainchoices:
             keyboard.write(course[1])
-            keyboard.press_and_release("tab")  # Not sure if this is how to reference the tab key
-        keyboard.press_and_release("enter")  # Not sure if this is how to reference the enter key
+            keyboard.press_and_release("tab")
+        #keyboard.press_and_release("enter")
 
 
     def enterbackup(self, number):
@@ -572,7 +572,7 @@ If you accidentally enter one of your alternate courses before registration, you
         if number < len(self.backups):
             if self.backups[number-1][0] < len(self.backups[number-1]):
                 keyboard.write((self.backups[number-1][self.backups[number-1][0]][1]))
-                keyboard.press_and_release("enter")
+                #keyboard.press_and_release("enter")
                 self.backups[number - 1][0] += 1
             else:
                 print(f"There are no more backups for class {number}.")
