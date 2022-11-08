@@ -557,10 +557,28 @@ If you accidentally enter one of your alternate courses before registration, you
         :return: None
         """
 
+        # Make the CRN boxes
+        for course in self.mainchoices:
+            keyboard.press_and_release("tab")
+            keyboard.press_and_release("enter")
+
+        # Go to the first CRN box
+        keyboard.press("shift")
+        for course in self.mainchoices:
+            keyboard.press_and_release("tab")
+        keyboard.release("shift")
+
+
+        # Type all of the CRNs
         for course in self.mainchoices:
             keyboard.write(course[1])
             keyboard.press_and_release("tab")
-        #keyboard.press_and_release("enter")
+
+
+        # Press the Add to schedule button
+        keyboard.press_and_release("tab")
+        keyboard.press_and_release("tab")
+        keyboard.press_and_release("enter")
 
 
     def enterbackup(self, number):
@@ -571,8 +589,10 @@ If you accidentally enter one of your alternate courses before registration, you
         """
         if number < len(self.backups):
             if self.backups[number-1][0] < len(self.backups[number-1]):
+
+                # Write the CRN in the first CRN box
                 keyboard.write((self.backups[number-1][self.backups[number-1][0]][1]))
-                #keyboard.press_and_release("enter")
+
                 self.backups[number - 1][0] += 1
             else:
                 print(f"There are no more backups for class {number}.")

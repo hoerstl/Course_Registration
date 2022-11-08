@@ -1,6 +1,9 @@
 Calculus III MWF 8-9:10 
 20303
 0
+Combinatorics TH 10-11:50
+20304
+1
 Programming Languages TH 1-2:50
 20136
 0
@@ -13,13 +16,10 @@ TAD 265 TH 8-9:50
 TAD 265 TH 10-11:50
 20177
 1
-Spanish 102 8-9:10
-20394
-0
-Spanish 102 10:40-11:50
+Spanish 102 MWF 10:40-11:50
 20396
-1
-Spanish 102 1:20-2:30
+0
+Spanish 102 MWF 1:20-2:30
 20395
 1
 GSTR 310 Understanding Life MW 4-5:50
