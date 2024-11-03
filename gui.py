@@ -2,10 +2,12 @@ import tkinter as tk
 import keyboard
 from tkinter import ttk
 from tkinter import messagebox
+import time
 
 
 class Mainwindow:
     def __init__(self, readfile, savefile):
+        self.delay = .05
         self.courselist = []
         self.readfile = readfile
         self.readfromfile()  # Gets the courselist ready based on input from file
@@ -560,25 +562,35 @@ If you accidentally enter one of your alternate courses before registration, you
         # Make the CRN boxes
         for course in self.mainchoices:
             keyboard.press_and_release("tab")
+            time.sleep(self.delay)
             keyboard.press_and_release("enter")
+            time.sleep(self.delay)
 
         # Go to the first CRN box
         keyboard.press("shift")
+        time.sleep(self.delay)
         for course in self.mainchoices:
             keyboard.press_and_release("tab")
+            time.sleep(self.delay)
+
         keyboard.release("shift")
 
 
         # Type all of the CRNs
         for course in self.mainchoices:
             keyboard.write(course[1])
+            time.sleep(self.delay)
             keyboard.press_and_release("tab")
+            time.sleep(self.delay)
 
 
         # Press the Add to schedule button
         keyboard.press_and_release("tab")
+        time.sleep(self.delay)
         keyboard.press_and_release("tab")
+        time.sleep(self.delay)
         keyboard.press_and_release("enter")
+        time.sleep(self.delay)
 
 
     def enterbackup(self, number):
